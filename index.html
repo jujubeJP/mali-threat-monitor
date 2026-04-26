@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>マリ共和国 治安インシデント・ダッシュボード | 2025-2026</title>
+<meta name="description" content="マリ共和国の直近12ヶ月（2025年5月～2026年4月）におけるテロ・誘拐・襲撃事案を地図と分析チャートで可視化。" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 32 32" aria-label="logo" width="28" height="28">
+      <rect x="2" y="2" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 16 L30 16 M16 2 L16 30" stroke="currentColor" stroke-width="1"/>
+      <circle cx="16" cy="16" r="5" fill="none" stroke="#e63946" stroke-width="2"/>
+      <circle cx="16" cy="16" r="1.5" fill="#e63946"/>
+    </svg>
+    <div>
+      <div class="brand-title">MALI THREAT MONITOR</div>
+      <div class="brand-sub">2025年5月 — 2026年4月 / 直近12ヶ月分析</div>
+    </div>
+  </div>
+  <div class="meta">
+    <span class="status-dot"></span>
+    <span class="meta-text">出典: ACLED · Bellingcat · Al Jazeera · Wikipedia · Critical Threats</span>
+  </div>
+</header>
+
+<!-- KPI Row -->
+<section class="kpi-row" id="kpi-row"></section>
+
+<!-- Filters -->
+<section class="filters">
+  <div class="filter-group">
+    <span class="filter-label">標的タイプ</span>
+    <div class="chip-row" id="target-filters"></div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">武装グループ</span>
+    <div class="chip-row" id="group-filters"></div>
+  </div>
+  <button class="reset-btn" id="reset-btn">フィルター解除</button>
+</section>
+
+<!-- Main Grid -->
+<main class="grid">
+
+  <!-- Map -->
+  <section class="card map-card">
+    <div class="card-header">
+      <h2>インシデント分布図</h2>
+      <span class="card-sub">クリックで詳細</span>
+    </div>
+    <div id="map"></div>
+    <div class="map-legend" id="map-legend"></div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="card timeline-card">
+    <div class="card-header">
+      <h2>月別発生頻度</h2>
+      <span class="card-sub">標的タイプ別積み上げ</span>
+    </div>
+    <canvas id="timelineChart"></canvas>
+  </section>
+
+  <!-- Target Types -->
+  <section class="card target-card">
+    <div class="card-header">
+      <h2>標的タイプ別構成</h2>
+      <span class="card-sub">12ヶ月累計</span>
+    </div>
+    <canvas id="targetChart"></canvas>
+  </section>
+
+  <!-- Groups -->
+  <section class="card groups-card">
+    <div class="card-header">
+      <h2>武装グループ活動量</h2>
+      <span class="card-sub">担当インシデント数</span>
+    </div>
+    <canvas id="groupChart"></canvas>
+  </section>
+
+  <!-- Region Heatmap-style -->
+  <section class="card region-card">
+    <div class="card-header">
+      <h2>地域別インシデント数</h2>
+      <span class="card-sub">州別集計</span>
+    </div>
+    <canvas id="regionChart"></canvas>
+  </section>
+
+  <!-- Insights -->
+  <section class="card insights-card">
+    <div class="card-header">
+      <h2>パターン分析</h2>
+      <span class="card-sub">主要洞察</span>
+    </div>
+    <div class="insights">
+      <div class="insight">
+        <div class="insight-num">01</div>
+        <div class="insight-body">
+          <strong>燃料輸送車への体系的攻撃</strong>
+          <p>2025年9月以降、JNIMはセネガル・コートジボワール・ギニアから陸路で燃料を運ぶタンクローリー（燃料輸送トラック）の車列を襲撃し供給路を遮断。300台以上が破壊され、内陸国マリは深刻な燃料危機に陥った。経済戦争への戦略転換を示す。</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num">02</div>
+        <div class="insight-body">
+          <strong>外国人を狙った身代金誘拐</strong>
+          <p>2025年5-10月の間に22-26名の外国人がマリで拉致された（過去最多）。インド・中国・UAEなどロシア系政権の同盟国国籍者が標的。UAE王族の身代金は2,000万ドル超とされる。</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num">03</div>
+        <div class="insight-body">
+          <strong>軍基地への大規模強襲の常態化</strong>
+          <p>Dioura（41名死亡）、Boulikessi（100名）、Timbuktu（60名超）、Tessit（90名）と2025年中盤に短期間で大規模死傷が連続。中央集権的な防衛能力の崩壊が顕在化。</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num">04</div>
+        <div class="insight-body">
+          <strong>JNIM-FLA連携と首都への前例なき攻撃</strong>
+          <p>2026年4月25日、JNIMとアザワド解放戦線（FLA）が初の協調攻撃を実施。バマコのKati基地・空港・キダル・ガオ・モプティ・セバレを同時打撃。FLAがキダルを完全制圧、ロシア・アフリカ軍団が撤退。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Incident Table -->
+  <section class="card table-card">
+    <div class="card-header">
+      <h2>インシデント詳細リスト</h2>
+      <span class="card-sub" id="table-count">— 件</span>
+    </div>
+    <div class="table-wrap">
+      <table id="incident-table">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>場所</th>
+            <th>標的</th>
+            <th>グループ</th>
+            <th>死者</th>
+            <th>概要</th>
+            <th>出典</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>
+    本ダッシュボードは公開ソース（OSINT）に基づくレビュー目的の分析であり、座標・死傷者数は報道時点の推定値を含みます。
+  </div>
+  <div>
+    主要出典: <a href="https://acleddata.com/" target="_blank">ACLED</a> ·
+    <a href="https://www.bellingcat.com/" target="_blank">Bellingcat</a> ·
+    <a href="https://www.aljazeera.com/" target="_blank">Al Jazeera</a> ·
+    <a href="https://en.wikipedia.org/wiki/Mali_fuel_blockade" target="_blank">Wikipedia (Mali fuel blockade)</a> ·
+    <a href="https://www.criticalthreats.org/" target="_blank">Critical Threats Project</a>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

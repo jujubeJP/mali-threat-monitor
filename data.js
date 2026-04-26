@@ -1,0 +1,470 @@
+// マリ共和国 治安インシデントデータ（2025年5月～2026年4月）
+// 出典: ACLED, Wikipedia, Al Jazeera, BBC, Bellingcat, ICT, Critical Threats,
+// African Security Analysis, BISI, Africa Defense Forum, Le Monde, Soufan Center
+
+const incidents = [
+  // ---------- 2025年5月 ----------
+  {
+    id: 1,
+    date: "2025-05-23",
+    location: "Dioura",
+    region: "Mopti",
+    lat: 14.917,
+    lng: -3.0,
+    targetType: "military_base",
+    group: "JNIM",
+    fatalities: 41,
+    summary: "JNIMがディウラの軍基地を強襲、マリ兵士41名が死亡。武器・車両を奪取。",
+    source: "Wikipedia / RFI",
+    sourceUrl: "https://en.wikipedia.org/wiki/2025_Dioura_attack"
+  },
+  // ---------- 2025年6月 ----------
+  {
+    id: 2,
+    date: "2025-06-01",
+    location: "Boulikessi",
+    region: "Mopti",
+    lat: 14.617,
+    lng: -1.567,
+    targetType: "military_base",
+    group: "JNIM",
+    fatalities: 100,
+    summary: "ブルキナファソ国境近くの軍基地を制圧。マリ兵士約100名死亡、22名が捕虜に。AK74式174挺を奪取。2025年最大規模の単独損失。",
+    source: "Wikipedia / Soufan Center",
+    sourceUrl: "https://en.wikipedia.org/wiki/Battle_of_Boulikessi_(2025)"
+  },
+  {
+    id: 3,
+    date: "2025-06-02",
+    location: "Timbuktu",
+    region: "Timbuktu",
+    lat: 16.7666,
+    lng: -3.0026,
+    targetType: "airport",
+    group: "JNIM",
+    fatalities: 60,
+    summary: "トンブクトゥ空港（マリ軍・ワグネル基地）への自爆車両攻撃。市北・東のチェックポイント3箇所も同時攻撃。マリ兵士60名以上死亡。",
+    source: "Wikipedia / AFP",
+    sourceUrl: "https://en.wikipedia.org/wiki/2025_Timbuktu_attack"
+  },
+  {
+    id: 4,
+    date: "2025-06-04",
+    location: "Tessit",
+    region: "Gao",
+    lat: 15.077,
+    lng: 0.766,
+    targetType: "military_base",
+    group: "ISGS",
+    fatalities: 90,
+    summary: "イスラム国サヘル州（ISGS）がテシットの軍基地を攻撃。マリ兵士40名・GATIA戦闘員と民間人50名死亡。武器・車両略奪。",
+    source: "Wikipedia",
+    sourceUrl: "https://en.wikipedia.org/wiki/2025_Tessit_attack"
+  },
+  // ---------- 2025年7月 ----------
+  {
+    id: 5,
+    date: "2025-07-01",
+    location: "Kayes",
+    region: "Kayes",
+    lat: 14.4469,
+    lng: -11.4456,
+    targetType: "city_multiple",
+    group: "JNIM",
+    fatalities: 15,
+    summary: "Katiba Macina（JNIM支派）が西部8拠点を同時攻撃。州都Kayes市初攻撃、セネガル国境ディボリ検問所への史上最接近攻撃（国境1マイル以内）。セメント工場でインド人技術者3名拉致。",
+    source: "Critical Threats / African Security Analysis",
+    sourceUrl: "https://www.criticalthreats.org/analysis/salafi-jihadi-areas-of-operation-in-west-africa-interactive-map-and-campaign-analysis"
+  },
+  {
+    id: 6,
+    date: "2025-07-01",
+    location: "Nioro du Sahel",
+    region: "Kayes",
+    lat: 15.2275,
+    lng: -9.5847,
+    targetType: "city_multiple",
+    group: "JNIM",
+    fatalities: 5,
+    summary: "JNIMがKayes州内NioroおよびNyamina, Sandare, Diboli等への同時攻撃。西部封鎖戦略の本格化。",
+    source: "Critical Threats",
+    sourceUrl: "https://www.criticalthreats.org/analysis/salafi-jihadi-areas-of-operation-in-west-africa-interactive-map-and-campaign-analysis"
+  },
+  {
+    id: 7,
+    date: "2025-07-01",
+    location: "Sandare",
+    region: "Kayes",
+    lat: 14.422,
+    lng: -10.343,
+    targetType: "kidnapping",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "Kayes州セメント工場へ襲撃、インド人技術者3名拉致。外国人労働者を狙う「経済戦争」戦略の一環。",
+    source: "African Security Analysis",
+    sourceUrl: "https://www.africansecurityanalysis.org/updates/kidnapping-incident-in-kobri-mali-on-november-6-2025"
+  },
+  // ---------- 2025年8月 ----------
+  {
+    id: 8,
+    date: "2025-08-19",
+    location: "Farabougou",
+    region: "Ségou",
+    lat: 14.05,
+    lng: -6.55,
+    targetType: "military_base",
+    group: "JNIM",
+    fatalities: 21,
+    summary: "JNIMがファラブグの軍駐屯地・村落を強襲・占領。21名死亡、車両15台・武器50挺以上奪取。以後JNIMが街を実効支配。",
+    source: "Ujasusi Blog / SITE Intelligence",
+    sourceUrl: "https://www.ujasusi.com/p/mali-army-jnim-attacks-august-2025-intelligence-brief"
+  },
+  {
+    id: 9,
+    date: "2025-08-19",
+    location: "Biriki-Wéré",
+    region: "Ségou",
+    lat: 14.12,
+    lng: -6.42,
+    targetType: "military_base",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "ファラブグと並行してビリキ＝ウェレの軍陣地に対し協調攻撃。",
+    source: "Ujasusi Blog",
+    sourceUrl: "https://www.ujasusi.com/p/mali-army-jnim-attacks-august-2025-intelligence-brief"
+  },
+  // ---------- 2025年9月 ----------
+  {
+    id: 10,
+    date: "2025-09-03",
+    location: "Bamako",
+    region: "Bamako",
+    lat: 12.6392,
+    lng: -8.0029,
+    targetType: "blockade",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "JNIM報道官アル＝バンバリが燃料封鎖を宣言。セネガル・コートジボワール・ギニアから内陸マリへ陸路で燃料を運ぶタンクローリー（燃料輸送トラック）が標的に。バマコ封鎖戦略の開始。",
+    source: "Wikipedia / Al Jazeera",
+    sourceUrl: "https://en.wikipedia.org/wiki/Mali_fuel_blockade"
+  },
+  {
+    id: 11,
+    date: "2025-09-14",
+    location: "Lakamane (Kayes region)",
+    region: "Kayes",
+    lat: 14.55455,
+    lng: -9.98426,
+    targetType: "fuel_tanker",
+    group: "JNIM",
+    fatalities: 1,
+    summary: "セネガル発の燃料コンボイがKaniaraとLakamane間で待ち伏せ攻撃。タンクローリー爆破、マリ軍車両1台と兵士1名死亡。Bellingcatが衛星画像で位置特定。",
+    source: "Bellingcat",
+    sourceUrl: "https://www.bellingcat.com/news/2025/12/03/mali-under-siege-tracking-the-fuel-blockade-crippling-bamako/"
+  },
+  {
+    id: 12,
+    date: "2025-09-19",
+    location: "Neguela-Soribougou (Koulikoro)",
+    region: "Koulikoro",
+    lat: 12.90289,
+    lng: -8.56459,
+    targetType: "fuel_tanker",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "バマコ北西70kmで燃料コンボイ襲撃。タンクローリー9台焼失。NASA FIRMSとSentinel-2衛星画像で確認。",
+    source: "Bellingcat / NASA FIRMS",
+    sourceUrl: "https://www.bellingcat.com/news/2025/12/03/mali-under-siege-tracking-the-fuel-blockade-crippling-bamako/"
+  },
+  {
+    id: 13,
+    date: "2025-09-15",
+    location: "Bamako (south, ranching area)",
+    region: "Bamako",
+    lat: 12.45,
+    lng: -8.05,
+    targetType: "kidnapping",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "ドバイ王族（78歳）所有の農場を急襲、誘拐。専用機を格納するハンガー破壊。UAEが2,000万ドル超の身代金支払い。",
+    source: "Africa Defense Forum / Wall Street Journal",
+    sourceUrl: "https://adf-magazine.com/2025/12/jnim-targets-wealthy-foreigners-for-ransoms/"
+  },
+  // ---------- 2025年10月 ----------
+  {
+    id: 14,
+    date: "2025-10-17",
+    location: "Kolondieba-Kadiana",
+    region: "Sikasso",
+    lat: 10.82640,
+    lng: -6.67186,
+    targetType: "fuel_tanker",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "コロンディエバとカディアナの間で燃料輸送車を襲撃。タンクローリー50台以上焼失。バイクの戦闘員映像で確認。",
+    source: "Bellingcat",
+    sourceUrl: "https://www.bellingcat.com/news/2025/12/03/mali-under-siege-tracking-the-fuel-blockade-crippling-bamako/"
+  },
+  {
+    id: 15,
+    date: "2025-10-21",
+    location: "Sikasso",
+    region: "Sikasso",
+    lat: 11.17092,
+    lng: -5.62559,
+    targetType: "fuel_tanker",
+    group: "JNIM",
+    fatalities: 1,
+    summary: "シカソ近郊で燃料輸送車40台超を破壊。武装した遺体1名確認。",
+    source: "Bellingcat",
+    sourceUrl: "https://www.bellingcat.com/news/2025/12/03/mali-under-siege-tracking-the-fuel-blockade-crippling-bamako/"
+  },
+  {
+    id: 16,
+    date: "2025-10-28",
+    location: "Neguela-Soribougou (Koulikoro, 2nd attack)",
+    region: "Koulikoro",
+    lat: 12.90847,
+    lng: -8.60058,
+    targetType: "fuel_tanker",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "9月攻撃地点のすぐ北で再び燃料コンボイ襲撃。連続的な戦術。",
+    source: "Bellingcat",
+    sourceUrl: "https://www.bellingcat.com/news/2025/12/03/mali-under-siege-tracking-the-fuel-blockade-crippling-bamako/"
+  },
+  // ---------- 2025年11月 ----------
+  {
+    id: 17,
+    date: "2025-11-06",
+    location: "Zegoua-Sikasso (Fachoribougou)",
+    region: "Sikasso",
+    lat: 11.12997,
+    lng: -5.60889,
+    targetType: "fuel_tanker",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "コートジボワール国境からのコンボイを襲撃。ファチョリブグでタンクローリー9台以上焼失。",
+    source: "Bellingcat",
+    sourceUrl: "https://www.bellingcat.com/news/2025/12/03/mali-under-siege-tracking-the-fuel-blockade-crippling-bamako/"
+  },
+  {
+    id: 18,
+    date: "2025-11-06",
+    location: "Kobri (Kayes region)",
+    region: "Kayes",
+    lat: 14.30,
+    lng: -11.20,
+    targetType: "kidnapping",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "セネガル国境付近でエネルギー事業に従事するインド国籍5名（技術者）が拉致。「経済戦争」の一環として外国人労働者標的化が継続。",
+    source: "African Security Analysis",
+    sourceUrl: "https://www.africansecurityanalysis.org/updates/kidnapping-incident-in-kobri-mali-on-november-6-2025"
+  },
+  {
+    id: 19,
+    date: "2025-11-01",
+    location: "Eastern Mali (Niger corridor)",
+    region: "Gao",
+    lat: 16.27,
+    lng: 0.03,
+    targetType: "blockade",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "JNIMが封鎖をニジェール経由の東部供給路にも拡大。マリの石油輸入の95%を遮断。",
+    source: "Critical Threats",
+    sourceUrl: "https://www.criticalthreats.org/analysis/salafi-jihadi-areas-of-operation-in-west-africa-interactive-map-and-campaign-analysis"
+  },
+  // ---------- 2025年12月 ----------
+  {
+    id: 20,
+    date: "2025-12-15",
+    location: "Ségou region (curfew zone)",
+    region: "Ségou",
+    lat: 13.4317,
+    lng: -6.2157,
+    targetType: "civilian",
+    group: "JNIM",
+    fatalities: 8,
+    summary: "OCHAによれば、Ségou・Sikasso・TimbuktuでIED（即席爆発装置）関連の人道アクセス制約が前月比155%増。民間人犠牲継続。",
+    source: "Global Centre for R2P / OCHA",
+    sourceUrl: "https://www.globalr2p.org/countries/mali/"
+  },
+  // ---------- 2026年1月 ----------
+  {
+    id: 21,
+    date: "2026-01-15",
+    location: "Bamako (siege ongoing)",
+    region: "Bamako",
+    lat: 12.6392,
+    lng: -8.0029,
+    targetType: "blockade",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "ICTレポートによると、JNIMによるバマコ包囲継続。燃料・食料の重大不足。学校・病院閉鎖。",
+    source: "ICT (International Institute for Counter-Terrorism)",
+    sourceUrl: "https://ict.org.il/conquest-of-mali-jnim/"
+  },
+  // ---------- 2026年2月 ----------
+  {
+    id: 22,
+    date: "2026-02-10",
+    location: "Mopti / Sévaré",
+    region: "Mopti",
+    lat: 14.4843,
+    lng: -4.0185,
+    targetType: "civilian",
+    group: "JNIM",
+    fatalities: 12,
+    summary: "中部マリで民間人の拉致・ザカート（イスラム税）強要が継続。Ménakaも被害。",
+    source: "Global Centre for R2P",
+    sourceUrl: "https://www.globalr2p.org/countries/mali/"
+  },
+  // ---------- 2026年3月 ----------
+  {
+    id: 23,
+    date: "2026-03-15",
+    location: "Southwest Mali (new spread)",
+    region: "Sikasso",
+    lat: 11.317,
+    lng: -5.667,
+    targetType: "civilian",
+    group: "JNIM",
+    fatalities: 6,
+    summary: "暴力が南西部に拡大。OCHAは2025年1-12月で中部サヘル全域3,737件のセキュリティ事案・9,362人死亡を記録。",
+    source: "Global Centre for R2P / OCHA",
+    sourceUrl: "https://www.globalr2p.org/countries/mali/"
+  },
+  // ---------- 2026年4月 ----------
+  {
+    id: 24,
+    date: "2026-04-25",
+    location: "Kati / Bamako",
+    region: "Bamako",
+    lat: 12.7411,
+    lng: -8.0708,
+    targetType: "military_base",
+    group: "JNIM+FLA",
+    fatalities: 16,
+    summary: "未明5:20頃、ゴイタ大統領が居住するKati主要軍基地で2回の爆発と銃撃戦。国防相サディオ・カマラ大将邸宅標的。Mamaribougou地区で戦闘継続。Modibo Keita国際空港近郊で重火器射撃と砲撃。ロシア・アフリカ軍団傭兵が応戦。",
+    source: "Wikipedia / Al Jazeera",
+    sourceUrl: "https://en.wikipedia.org/wiki/2026_Mali_attacks"
+  },
+  {
+    id: 25,
+    date: "2026-04-25",
+    location: "Modibo Keita International Airport",
+    region: "Bamako",
+    lat: 12.5335,
+    lng: -7.9499,
+    targetType: "airport",
+    group: "JNIM+FLA",
+    fatalities: 0,
+    summary: "バマコのModibo Keita国際空港近郊で激しい銃撃戦と爆発。発着便全便キャンセル。ヘリコプター3機が監視飛行。ワグネル後継のアフリカ軍団基地が攻撃対象に。",
+    source: "Al Jazeera / NPR",
+    sourceUrl: "https://www.aljazeera.com/news/2026/4/25/mali-army-says-armed-groups-launch-nationwide-attacks-gunfire-near-airport"
+  },
+  {
+    id: 26,
+    date: "2026-04-25",
+    location: "Kidal",
+    region: "Kidal",
+    lat: 18.4411,
+    lng: 1.4078,
+    targetType: "city_multiple",
+    group: "FLA",
+    fatalities: 0,
+    summary: "アザワド解放戦線（FLA）がキダルの大部分を制圧したと宣言。州知事公邸にFLA戦闘員侵入の映像確認。マリ軍とロシア軍は旧MINUSMA基地に立てこもり。後にアフリカ軍団撤退合意でFLAが完全制圧。",
+    source: "Wikipedia / Al Jazeera",
+    sourceUrl: "https://en.wikipedia.org/wiki/2026_Mali_attacks"
+  },
+  {
+    id: 27,
+    date: "2026-04-25",
+    location: "Gao",
+    region: "Gao",
+    lat: 16.2667,
+    lng: -0.05,
+    targetType: "city_multiple",
+    group: "JNIM+FLA",
+    fatalities: 0,
+    summary: "ガオ市内で銃撃戦。FLA戦闘員が一部を制圧。マリ空軍Mi-35ヘリ（実際にはアフリカ軍団所属）撃墜、乗員と機動火力班全員死亡。",
+    source: "Wikipedia / Al Jazeera",
+    sourceUrl: "https://en.wikipedia.org/wiki/2026_Mali_attacks"
+  },
+  {
+    id: 28,
+    date: "2026-04-25",
+    location: "Sévaré",
+    region: "Mopti",
+    lat: 14.5333,
+    lng: -4.1,
+    targetType: "city_multiple",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "セバレ（モプティ近郊）で銃撃戦と爆発。空軍基地が標的。",
+    source: "Wikipedia / NPR",
+    sourceUrl: "https://en.wikipedia.org/wiki/2026_Mali_attacks"
+  },
+  {
+    id: 29,
+    date: "2026-04-25",
+    location: "Mopti",
+    region: "Mopti",
+    lat: 14.4843,
+    lng: -4.0185,
+    targetType: "city_multiple",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "モプティでJNIMが軍施設を協調攻撃。中部マリの政府支配が動揺。",
+    source: "Wikipedia",
+    sourceUrl: "https://en.wikipedia.org/wiki/2026_Mali_attacks"
+  },
+  {
+    id: 30,
+    date: "2026-04-25",
+    location: "Senou (Bamako south)",
+    region: "Bamako",
+    lat: 12.55,
+    lng: -7.95,
+    targetType: "military_base",
+    group: "JNIM",
+    fatalities: 0,
+    summary: "JNIMが空港近接のSenou軍施設を攻撃。バマコ周辺で前例のない協調攻撃の一部。",
+    source: "Wikipedia",
+    sourceUrl: "https://en.wikipedia.org/wiki/2026_Mali_attacks"
+  }
+];
+
+// 主要都市の参照座標
+const majorCities = [
+  { name: "Bamako", lat: 12.6392, lng: -8.0029, role: "首都" },
+  { name: "Kati", lat: 12.7411, lng: -8.0708, role: "主要軍基地" },
+  { name: "Ségou", lat: 13.4317, lng: -6.2157, role: "中部主要都市" },
+  { name: "Mopti", lat: 14.4843, lng: -4.0185, role: "中部交易都市" },
+  { name: "Timbuktu", lat: 16.7666, lng: -3.0026, role: "北部歴史都市" },
+  { name: "Gao", lat: 16.2667, lng: -0.05, role: "北東部主要都市" },
+  { name: "Kidal", lat: 18.4411, lng: 1.4078, role: "極北部州都" },
+  { name: "Kayes", lat: 14.4469, lng: -11.4456, role: "西部金鉱地域" },
+  { name: "Sikasso", lat: 11.317, lng: -5.667, role: "南部国境都市" }
+];
+
+// 標的タイプの定義
+const targetTypes = {
+  airport:        { label: "空港",         color: "#e63946" },
+  military_base:  { label: "軍施設",       color: "#d62828" },
+  fuel_tanker:    { label: "燃料輸送トラック", color: "#f77f00" },
+  kidnapping:     { label: "誘拐",         color: "#9d4edd" },
+  blockade:       { label: "封鎖",         color: "#6c757d" },
+  civilian:       { label: "民間人",       color: "#fcbf49" },
+  city_multiple:  { label: "都市複合攻撃", color: "#bc4749" }
+};
+
+// 武装グループ
+const groups = {
+  "JNIM":      { label: "JNIM (al-Qaeda系)",      color: "#264653" },
+  "ISGS":      { label: "ISGS (Islamic State系)", color: "#e76f51" },
+  "FLA":       { label: "FLA (トゥアレグ分離)",   color: "#2a9d8f" },
+  "JNIM+FLA":  { label: "JNIM+FLA連携",            color: "#7209b7" }
+};

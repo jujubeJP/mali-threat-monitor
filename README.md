@@ -4,7 +4,8 @@
 
 ## 公開URL
 
-GitHub Pages: <https://jujubejp.github.io/mali-threat-monitor/>
+- メインダッシュボード（12ヶ月分析）: <https://jujubejp.github.io/mali-threat-monitor/>
+- バマコ治安リアルタイム地図（2026/04/27〜）: <https://jujubejp.github.io/mali-threat-monitor/bamako-dashboard/>
 
 ## 概要
 
@@ -55,12 +56,20 @@ python3 -m http.server 8000
 
 ```
 mali-threat-monitor/
-├── index.html   # ダッシュボードのレイアウト・KPI・フィルター・パネル
-├── style.css    # ダーク基調のスタイル定義
-├── app.js       # 地図・チャート・テーブル・フィルター連動ロジック
-├── data.js      # インシデントデータ・都市座標・分類定義
+├── index.html              # メインダッシュボードのレイアウト
+├── style.css               # ダーク基調のスタイル定義
+├── app.js                  # 地図・チャート・テーブル・フィルター連動ロジック
+├── data.js                 # インシデントデータ・都市座標・分類定義
+├── bamako-dashboard/       # バマコ局所版（時間軸スライダー付き）
+│   ├── index.html          # 攻撃・デモ・外出禁止令・封鎖を時系列表示
+│   ├── app.js              # Leafletマーカー・タイムライン制御
+│   └── data.js             # 主要拠点6件＋イベント12件
 └── README.md
 ```
+
+## バマコ局所ダッシュボードについて
+
+2026年4月25日のJNIM＋FLA連合による協調攻撃以降のバマコ周辺事象を時系列で可視化。空港・カティ軍事基地・フランス文化センター・大統領府などの拠点を地図上にマークし、攻撃／デモ／外出禁止令／封鎖の各イベントを脈動マーカーで重ね、下部のスライダーで4/27〜4/30の進行を再生できます。
 
 ## 注意事項
 

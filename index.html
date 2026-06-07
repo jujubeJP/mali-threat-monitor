@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>マリ共和国 治安インシデント・ダッシュボード | 2025-2026</title>
-<meta name="description" content="マリ共和国の2025年5月～2026年6月のテロ・誘拐・襲撃事案を、4つの時系列フェーズで分析するインタラクティブダッシュボード。" />
+<title>マリ共和国 治安インシデント・ダッシュボード | 2012-2026</title>
+<meta name="description" content="マリ共和国の治安事案を、近年（13ヶ月詳細）と長期（14年マクロ）の2軸で分析するインタラクティブダッシュボード。" />
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
 
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-view="13m">
 
 <header class="topbar">
   <div class="brand">
@@ -33,38 +33,60 @@
     </svg>
     <div>
       <div class="brand-title">MALI THREAT MONITOR</div>
-      <div class="brand-sub">2025年5月 — 2026年6月 / 13ヶ月時系列分析</div>
+      <div class="brand-sub" id="brand-sub">2025年5月 — 2026年6月 / 13ヶ月時系列分析</div>
     </div>
   </div>
   <div class="meta">
     <span class="status-dot"></span>
-    <span class="meta-text">出典: ACLED · Bellingcat · Al Jazeera · Soufan Center · ICCT · Reuters · BBC</span>
+    <span class="meta-text">出典: ACLED · OECD · UN · ICCT · Soufan Center · Reuters · BBC</span>
   </div>
 </header>
 
-<!-- KPI Row -->
-<section class="kpi-row" id="kpi-row"></section>
+<!-- View Tabs -->
+<nav class="view-tabs">
+  <button class="view-tab active" data-view-tab="13m">
+    <span class="tab-num">01</span>
+    <span class="tab-body">
+      <span class="tab-title">直近13ヶ月詳細</span>
+      <span class="tab-range">2025-05 → 2026-06 · 事件レベル</span>
+    </span>
+  </button>
+  <button class="view-tab" data-view-tab="14y">
+    <span class="tab-num">02</span>
+    <span class="tab-body">
+      <span class="tab-title">長期14年マクロ</span>
+      <span class="tab-range">2012 → 2026 · 年次集計</span>
+    </span>
+  </button>
+</nav>
 
-<!-- Phase Timeline Selector -->
-<section class="phase-bar">
-  <div class="phase-bar-label">時系列フェーズ</div>
-  <div class="phase-track" id="phase-track"></div>
-</section>
+<!-- ====================================
+     VIEW 1: 13-MONTH DETAILED
+     ==================================== -->
+<div class="view-13m view-wrap">
 
-<!-- Filters -->
-<section class="filters">
-  <div class="filter-group">
-    <span class="filter-label">標的タイプ</span>
-    <div class="chip-row" id="target-filters"></div>
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">武装グループ</span>
-    <div class="chip-row" id="group-filters"></div>
-  </div>
-  <button class="reset-btn" id="reset-btn">フィルター解除</button>
-</section>
+  <!-- KPI Row -->
+  <section class="kpi-row" id="kpi-row"></section>
 
-<!-- Main Grid -->
+  <!-- Phase Timeline Selector -->
+  <section class="phase-bar">
+    <div class="phase-bar-label">時系列フェーズ</div>
+    <div class="phase-track" id="phase-track"></div>
+  </section>
+
+  <!-- Filters -->
+  <section class="filters">
+    <div class="filter-group">
+      <span class="filter-label">標的タイプ</span>
+      <div class="chip-row" id="target-filters"></div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">武装グループ</span>
+      <div class="chip-row" id="group-filters"></div>
+    </div>
+    <button class="reset-btn" id="reset-btn">フィルター解除</button>
+  </section>
+
 <main class="grid">
 
   <!-- Map -->
@@ -195,6 +217,122 @@
   </section>
 
 </main>
+</div><!-- /view-13m -->
+
+<!-- ====================================
+     VIEW 2: 14-YEAR LONG RANGE
+     ==================================== -->
+<div class="view-14y view-wrap">
+
+  <!-- Long Range KPIs -->
+  <section class="kpi-row" id="long-kpi-row"></section>
+
+  <!-- Long Phase Selector -->
+  <section class="phase-bar">
+    <div class="phase-bar-label">8フェーズ年表</div>
+    <div class="phase-track" id="long-phase-track"></div>
+  </section>
+
+<main class="grid">
+
+  <!-- Annual Stacked Timeline -->
+  <section class="card long-timeline-card">
+    <div class="card-header">
+      <h2>年次推移（事件数 / 死者数）</h2>
+      <span class="card-sub">フェーズ色積み上げ・2026は半年分</span>
+    </div>
+    <canvas id="longTimelineChart"></canvas>
+  </section>
+
+  <!-- Phase Strip Chronology -->
+  <section class="card phase-chronology-card">
+    <div class="card-header">
+      <h2>8フェーズ年表ストリップ</h2>
+      <span class="card-sub">PA → PH の戦略転換点</span>
+    </div>
+    <div id="phase-strip" class="phase-strip"></div>
+  </section>
+
+  <!-- Actor Activity Gantt -->
+  <section class="card actor-gantt-card">
+    <div class="card-header">
+      <h2>主要アクター活動期間</h2>
+      <span class="card-sub">誰がいつ主役だったか</span>
+    </div>
+    <div id="actor-gantt" class="actor-gantt"></div>
+  </section>
+
+  <!-- Region × Year Heatmap -->
+  <section class="card region-year-card">
+    <div class="card-header">
+      <h2>地域 × 年 ヒートマップ</h2>
+      <span class="card-sub">攻撃の地理的重心の14年間の移動</span>
+    </div>
+    <div id="region-year-heatmap" class="heatmap-wrap"></div>
+  </section>
+
+  <!-- Milestones Timeline -->
+  <section class="card milestones-card">
+    <div class="card-header">
+      <h2>主要マイルストーン</h2>
+      <span class="card-sub">戦略転換点23件</span>
+    </div>
+    <div id="milestones-list" class="milestones-list"></div>
+  </section>
+
+  <!-- Long Range Insights -->
+  <section class="card long-insights-card">
+    <div class="card-header">
+      <h2>長期パターン分析</h2>
+      <span class="card-sub">14年で見えること</span>
+    </div>
+    <div class="insights">
+      <div class="insight">
+        <div class="insight-num" style="color:#1d3557">①</div>
+        <div class="insight-body">
+          <strong>暴力の主舞台は北部 → 中部 → 全域へ拡散</strong>
+          <p>2012-2014年は北部Gao/Timbuktu/Kidalが中心。2015年のアルジェ和平以降、Mopti州を起点に中部へ重心が移動。2019年以降は中部Moptiが恒常的トップ、2020年以降は南西Sikasso/Kayes/Koulikoroまで拡大し、2025-2026年は首都Bamakoが圏内に。攻撃の地理的「圏」が10年で2倍以上に拡大した。</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:#f4a261">②</div>
+        <div class="insight-body">
+          <strong>クーデターと暴力の正の相関</strong>
+          <p>2020年8月および2021年5月のクーデター後、毎年の死者数は前年から急増。"治安改善"を掲げた軍政が、Wagner投入と並んで対民間人作戦を激化させ、2022-2023年は2016年比で約10倍の死者数。OECD報告も「軍政は悪化する状況を引き継いだのではなく、それを加速した」と結論。</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:#e63946">③</div>
+        <div class="insight-body">
+          <strong>戦術サイクル：軍基地 → 民間人 → 経済 → 連携</strong>
+          <p>JNIMの戦術は14年間で4回の質的転換を経た。①2012-2014: 領土掌握（軍駐屯地襲撃）→ ②2015-2019: 中部での民族間暴力醸成 → ③2020-2023: 国家対JNIM-ISGSの三つ巴 → ④2024-2026: 経済封鎖と首都圧迫＋FLA連携。各サイクルで"より低コスト・より高政治効果"の手段へシフト。</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:#7209b7">④</div>
+        <div class="insight-body">
+          <strong>外部介入の全敗</strong>
+          <p>フランスServal（2013-2014: 一時的成功）→ Barkhane（2014-2022: 8年で撤退）→ MINUSMA（2013-2023: 10年で「失敗」と評価され排除）→ Wagner（2021-2025: 4年で"任務完了"と称し撤退）→ Africa Corps（2025-: 1年で北部撤退）。**5つの外部安全保障枠組みが連続して機能不全**、JNIMの規模・地理的範囲は毎期拡大。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Notes -->
+  <section class="card long-notes-card">
+    <div class="card-header">
+      <h2>データ取り扱い</h2>
+      <span class="card-sub">信頼性レンジと注意点</span>
+    </div>
+    <div class="data-notes">
+      <p><strong>データソース：</strong>ACLED（1997年〜マリ全期間カバー）の年次公表値、ACLED Year in Review・Conflict Watchlist・Africa Overview各号の数値、OECD「Military coups, jihadism and insecurity in the Central Sahel」(2024)、UN MINUSMA最終レポート、HRW、ISS Africaの分析を統合。</p>
+      <p><strong>粒度：</strong>長期版は年次集計のみ（事件レベルではない）。これは14年で総計約12,000件の事案を個別マーカーで表示しても認知的に把握できないため、敢えてマクロ集計にとどめた設計判断。事件レベルの精密分析は「直近13ヶ月詳細」タブを使用。</p>
+      <p><strong>信頼区間：</strong>2012-2016年の数値は<em>±15%</em>程度の不確実性（当時のメディア報道密度が低く、ACLED自体が遡及補強中）。2017-2024年は<em>±10%</em>程度。2025-2026年は<em>±5%</em>程度。2026年は6月時点までの半年分のため、年末の最終値は最大2倍になる可能性。</p>
+      <p><strong>フェーズ区切り：</strong>本ダッシュボード独自の分析レイヤー。戦略・主体・地理の質的転換に基づき設定したが、現地アナリストによっては異なる区分けもありうる（例：MINUSMA撤退時期をPF/PG分岐とする見方など）。</p>
+    </div>
+  </section>
+
+</div><!-- /view-14y -->
 
 <footer class="footer">
   <div>
@@ -211,6 +349,8 @@
 </footer>
 
 <script src="data.js"></script>
+<script src="data-long.js"></script>
 <script src="app.js"></script>
+<script src="app-long.js"></script>
 </body>
 </html>

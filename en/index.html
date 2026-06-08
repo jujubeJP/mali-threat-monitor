@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Republic of Mali Security Incident Dashboard | 2012-2026</title>
+<meta name="description" content="Interactive dashboard analyzing security incidents in the Republic of Mali across two lenses: recent 13-month detail and 14-year macro view." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+<link rel="stylesheet" href="../style.css" />
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid #2c323d;
+    border-radius: 4px;
+    color: #9aa1ad;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    margin-left: 14px;
+    transition: all .15s ease;
+  }
+  .lang-switch:hover {
+    color: #fff;
+    border-color: #e63946;
+  }
+</style>
+</head>
+<body data-view="13m">
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 32 32" aria-label="logo" width="28" height="28">
+      <rect x="2" y="2" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 16 L30 16 M16 2 L16 30" stroke="currentColor" stroke-width="1"/>
+      <circle cx="16" cy="16" r="5" fill="none" stroke="#e63946" stroke-width="2"/>
+      <circle cx="16" cy="16" r="1.5" fill="#e63946"/>
+    </svg>
+    <div>
+      <div class="brand-title">MALI THREAT MONITOR</div>
+      <div class="brand-sub" id="brand-sub">May 2025 — Jun 2026 / 13-month timeline analysis</div>
+    </div>
+  </div>
+  <div class="meta">
+    <span class="status-dot"></span>
+    <span class="meta-text">Sources: ACLED · OECD · UN · ICCT · Soufan Center · Reuters · BBC</span>
+    <a class="lang-switch" href="../index.html" title="日本語版へ">🌐 日本語</a>
+  </div>
+</header>
+
+<!-- View Tabs -->
+<nav class="view-tabs">
+  <button class="view-tab active" data-view-tab="13m">
+    <span class="tab-num">01</span>
+    <span class="tab-body">
+      <span class="tab-title">Recent 13 Months</span>
+      <span class="tab-range">2025-05 → 2026-06 · Event-level</span>
+    </span>
+  </button>
+  <button class="view-tab" data-view-tab="14y">
+    <span class="tab-num">02</span>
+    <span class="tab-body">
+      <span class="tab-title">14-Year Macro</span>
+      <span class="tab-range">2012 → 2026 · Annual aggregate</span>
+    </span>
+  </button>
+</nav>
+
+<!-- ====================================
+     VIEW 1: 13-MONTH DETAILED
+     ==================================== -->
+<div class="view-13m view-wrap">
+
+  <!-- KPI Row -->
+  <section class="kpi-row" id="kpi-row"></section>
+
+  <!-- Phase Timeline Selector -->
+  <section class="phase-bar">
+    <div class="phase-bar-label">Timeline Phases</div>
+    <div class="phase-track" id="phase-track"></div>
+  </section>
+
+  <!-- Filters -->
+  <section class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Target Type</span>
+      <div class="chip-row" id="target-filters"></div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Armed Group</span>
+      <div class="chip-row" id="group-filters"></div>
+    </div>
+    <button class="reset-btn" id="reset-btn">Reset Filters</button>
+  </section>
+
+<main class="grid">
+
+  <!-- Map -->
+  <section class="card map-card">
+    <div class="card-header">
+      <h2>Incident Map</h2>
+      <span class="card-sub">Marker fill = target type / border = phase</span>
+    </div>
+    <div id="map"></div>
+    <div class="map-legend" id="map-legend"></div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="card timeline-card">
+    <div class="card-header">
+      <h2>Monthly Frequency</h2>
+      <span class="card-sub">Phase-stacked</span>
+    </div>
+    <canvas id="timelineChart"></canvas>
+  </section>
+
+  <!-- Phase Shift Section -->
+  <section class="card phase-shift-card">
+    <div class="card-header">
+      <h2>Tactical &amp; Regional Shift by Phase</h2>
+      <span class="card-sub">What changed from P1 → P4</span>
+    </div>
+    <div class="phase-shift-grid" id="phase-shift-grid"></div>
+  </section>
+
+  <!-- Region-by-Phase Heatmap -->
+  <section class="card region-phase-card">
+    <div class="card-header">
+      <h2>Region × Phase Heatmap</h2>
+      <span class="card-sub">Which regions were hit when</span>
+    </div>
+    <div id="heatmap" class="heatmap-wrap"></div>
+  </section>
+
+  <!-- Target Types -->
+  <section class="card target-card">
+    <div class="card-header">
+      <h2>Target Type Breakdown</h2>
+      <span class="card-sub">Period total</span>
+    </div>
+    <canvas id="targetChart"></canvas>
+  </section>
+
+  <!-- Groups -->
+  <section class="card groups-card">
+    <div class="card-header">
+      <h2>Armed Group Activity</h2>
+      <span class="card-sub">Incidents attributed</span>
+    </div>
+    <canvas id="groupChart"></canvas>
+  </section>
+
+  <!-- Region -->
+  <section class="card region-card">
+    <div class="card-header">
+      <h2>Incidents by Region</h2>
+      <span class="card-sub">By province</span>
+    </div>
+    <canvas id="regionChart"></canvas>
+  </section>
+
+  <!-- Insights -->
+  <section class="card insights-card">
+    <div class="card-header">
+      <h2>Pattern Analysis</h2>
+      <span class="card-sub">Key insights along the timeline</span>
+    </div>
+    <div class="insights">
+      <div class="insight">
+        <div class="insight-num">P1</div>
+        <div class="insight-body">
+          <strong>Large-scale military base assaults become routine (May–Aug 2025)</strong>
+          <p>Dioura (41), Boulikessi (100), Timbuktu (60+), and Tessit (90) — roughly 290 Malian soldiers killed in four months. Targets were isolated central and northern garrisons. In August, JNIM placed Farabougou under effective control.</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num">P2</div>
+        <div class="insight-body">
+          <strong>From "military war" to "economic war" (Sep 2025 – Mar 2026)</strong>
+          <p>JNIM declared a fuel blockade and systematically attacked fuel convoys from Senegal, Côte d'Ivoire, Guinea, and Niger. More than 300 fuel trucks were destroyed. In parallel, kidnappings of foreign nationals (UAE royals, Indian engineers) generated ransom revenue. The center of gravity shifted from the north to the western and southern borders.</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num">P3</div>
+        <div class="insight-body">
+          <strong>JNIM–FLA coordination and the fall of Kidal (April 2026)</strong>
+          <p>On April 25, the two organizations launched their first-ever coordinated attack, striking Bamako, Kati, the airport, Kidal, Gao, Mopti, and Sevare simultaneously. Defense Minister Sadio Camara was killed in a suicide bombing. FLA took full control of Kidal. GI-TOC called it "the largest security shock since 2012."</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num">P4</div>
+        <div class="insight-body">
+          <strong>Total loss of the north and the encirclement of Bamako (May–Jun 2026)</strong>
+          <p>The Africa Corps withdrew successively from Tessalit and Aguelhok, disappearing entirely from northern Mali by the end of May. The Intahaka gold mine fell to FLA. JNIM cut three of Bamako's six trunk roads; bread and rice prices in the capital doubled, transport costs tripled. In the center, a major offensive against Dozo militias killed more than 50 in May alone. In June a bus hit a mine on the Bamako–Kayes road, killing eight. The junta responded with a one-year ban on motorcycle imports.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Incident Table -->
+  <section class="card table-card">
+    <div class="card-header">
+      <h2>Incident Detail List</h2>
+      <span class="card-sub" id="table-count">— items</span>
+    </div>
+    <div class="table-wrap">
+      <table id="incident-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Phase</th>
+            <th>Location</th>
+            <th>Target</th>
+            <th>Group</th>
+            <th>Fatalities</th>
+            <th>Summary</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+</div><!-- /view-13m -->
+
+<!-- ====================================
+     VIEW 2: 14-YEAR LONG RANGE
+     ==================================== -->
+<div class="view-14y view-wrap">
+
+  <!-- Long Range KPIs -->
+  <section class="kpi-row" id="long-kpi-row"></section>
+
+  <!-- Long Phase Selector -->
+  <section class="phase-bar">
+    <div class="phase-bar-label">8-Phase Chronology</div>
+    <div class="phase-track" id="long-phase-track"></div>
+  </section>
+
+<main class="grid">
+
+  <!-- Annual Stacked Timeline -->
+  <section class="card long-timeline-card">
+    <div class="card-header">
+      <h2>Annual Trends (Events / Fatalities)</h2>
+      <span class="card-sub">Phase-colored · 2026 is half-year</span>
+    </div>
+    <canvas id="longTimelineChart"></canvas>
+  </section>
+
+  <!-- Phase Strip Chronology -->
+  <section class="card phase-chronology-card">
+    <div class="card-header">
+      <h2>8-Phase Chronology Strip</h2>
+      <span class="card-sub">Strategic inflection points from PA → PH</span>
+    </div>
+    <div id="phase-strip" class="phase-strip"></div>
+  </section>
+
+  <!-- Actor Activity Gantt -->
+  <section class="card actor-gantt-card">
+    <div class="card-header">
+      <h2>Major Actor Activity Periods</h2>
+      <span class="card-sub">Who led the violence and when</span>
+    </div>
+    <div id="actor-gantt" class="actor-gantt"></div>
+  </section>
+
+  <!-- Region × Year Heatmap -->
+  <section class="card region-year-card">
+    <div class="card-header">
+      <h2>Region × Year Heatmap</h2>
+      <span class="card-sub">14-year geographic shift of violence</span>
+    </div>
+    <div id="region-year-heatmap" class="heatmap-wrap"></div>
+  </section>
+
+  <!-- Milestones Timeline -->
+  <section class="card milestones-card">
+    <div class="card-header">
+      <h2>Major Milestones</h2>
+      <span class="card-sub">23 strategic inflection points</span>
+    </div>
+    <div id="milestones-list" class="milestones-list"></div>
+  </section>
+
+  <!-- Long Range Insights -->
+  <section class="card long-insights-card">
+    <div class="card-header">
+      <h2>Long-Range Pattern Analysis</h2>
+      <span class="card-sub">What 14 years reveals</span>
+    </div>
+    <div class="insights">
+      <div class="insight">
+        <div class="insight-num" style="color:#1d3557">1</div>
+        <div class="insight-body">
+          <strong>Violence diffuses from north → center → everywhere</strong>
+          <p>In 2012–2014, the center of gravity was northern Mali (Gao / Timbuktu / Kidal). After the 2015 Algiers Accord, weight shifted to the center starting from Mopti. From 2019 onward, Mopti became the permanent leader; from 2020, expansion reached the southwest (Sikasso, Kayes, Koulikoro); by 2025–2026 the capital Bamako entered the active zone. The geographic footprint of violence has more than doubled in a decade.</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:#f4a261">2</div>
+        <div class="insight-body">
+          <strong>Positive correlation between coups and violence</strong>
+          <p>After the August 2020 and May 2021 coups, annual fatalities surged year over year. The junta — which justified itself in the name of "improved security" — intensified counter-civilian operations alongside the Wagner deployment, and 2022–2023 fatality counts were roughly ten times the 2016 level. OECD concluded: "the junta did not inherit a deteriorating situation; it accelerated it."</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:#e63946">3</div>
+        <div class="insight-body">
+          <strong>Tactical cycle: bases → civilians → economy → coordination</strong>
+          <p>JNIM's tactics underwent four qualitative shifts in 14 years. (1) 2012–2014: territorial control (garrison assaults) → (2) 2015–2019: stoking communal violence in the center → (3) 2020–2023: three-way state vs. JNIM vs. ISGS contest → (4) 2024–2026: economic blockade and pressure on the capital plus coordination with FLA. Each cycle shifted to "lower cost, higher political effect" methods.</p>
+        </div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:#7209b7">4</div>
+        <div class="insight-body">
+          <strong>Total defeat of external interventions</strong>
+          <p>France's Serval (2013–2014, temporary success) → Barkhane (2014–2022, withdrew after 8 years) → MINUSMA (2013–2023, evaluated as a "failure" and expelled after 10 years) → Wagner (2021–2025, declared "mission accomplished" and withdrew after 4 years) → Africa Corps (2025–, withdrew from the north within one year). <strong>Five successive external security frameworks have failed in succession</strong>, while JNIM's scale and geographic reach expanded with each period.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Notes -->
+  <section class="card long-notes-card">
+    <div class="card-header">
+      <h2>Data Handling</h2>
+      <span class="card-sub">Confidence ranges and caveats</span>
+    </div>
+    <div class="data-notes">
+      <p><strong>Sources:</strong> ACLED (full Mali coverage since 1997) annual figures, ACLED Year in Review / Conflict Watchlist / Africa Overview issues, OECD "Military coups, jihadism and insecurity in the Central Sahel" (2024), the UN MINUSMA final report, HRW, and ISS Africa analyses.</p>
+      <p><strong>Granularity:</strong> The long-range view shows annual aggregates only (not event-level). Plotting ~12,000 individual events across 14 years would be cognitively unmanageable, so this is a deliberate macro-level design choice. For event-level precision analysis, use the "Recent 13 Months" tab.</p>
+      <p><strong>Confidence intervals:</strong> 2012–2016 figures carry roughly <em>±15%</em> uncertainty (media coverage was thinner and ACLED is still backfilling). 2017–2024 is approximately <em>±10%</em>. 2025–2026 is approximately <em>±5%</em>. The 2026 figure covers only the first six months, so the year-end total may be up to twice as large.</p>
+      <p><strong>Phase boundaries:</strong> An analytical layer unique to this dashboard, set on qualitative shifts in strategy, actors, and geography. Local analysts may draw different boundaries (for example, treating the MINUSMA withdrawal as the PF/PG inflection point).</p>
+    </div>
+  </section>
+
+</div><!-- /view-14y -->
+
+<footer class="footer">
+  <div>
+    This dashboard is an OSINT-based review of publicly available sources. Coordinates and casualty figures include estimates as reported at the time.
+  </div>
+  <div>
+    Key sources:
+    <a href="https://acleddata.com/" target="_blank">ACLED</a> ·
+    <a href="https://www.bellingcat.com/" target="_blank">Bellingcat</a> ·
+    <a href="https://thesoufancenter.org/intelbrief-2026-may-12/" target="_blank">Soufan Center</a> ·
+    <a href="https://icct.nl/publication/mali-what-were-reasons-and-consequences-25-april-attacks" target="_blank">ICCT</a> ·
+    <a href="https://en.wikipedia.org/wiki/2026_Mali_attacks" target="_blank">Wikipedia</a>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="data-long.js"></script>
+<script src="app.js"></script>
+<script src="app-long.js"></script>
+</body>
+</html>
